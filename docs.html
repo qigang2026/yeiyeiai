@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>需求文档中心 - 创也·乾坤</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      height: 100%;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+        "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      color: rgba(0, 0, 0, 0.88);
+      -webkit-font-smoothing: antialiased;
+      background: #f5f7fa;
+    }
+
+    a { color: #5b5ce2; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      min-height: 100vh;
+    }
+
+    /* ====== 侧边栏 ====== */
+    aside.sidebar {
+      background: #ffffff;
+      border-right: 1px solid #e5e7eb;
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+      position: sticky;
+      top: 0;
+      max-height: 100vh;
+    }
+
+    .sidebar-logo {
+      padding: 20px 24px;
+      border-bottom: 1px solid #f0f0f0;
+    }
+
+    .sidebar-logo-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: rgba(0, 0, 0, 0.88);
+      margin-bottom: 4px;
+    }
+
+    .sidebar-logo-sub {
+      font-size: 12px;
+      color: rgba(0, 0, 0, 0.45);
+    }
+
+    .sidebar-search {
+      padding: 12px 16px;
+      border-bottom: 1px solid #f0f0f0;
+    }
+
+    .sidebar-search input {
+      width: 100%;
+      height: 32px;
+      padding: 0 10px;
+      border: 1px solid #d9d9d9;
+      border-radius: 6px;
+      font-size: 13px;
+      color: rgba(0, 0, 0, 0.88);
+      background: #ffffff;
+      font-family: inherit;
+    }
+
+    .sidebar-search input:focus {
+      outline: none;
+      border-color: #5b5ce2;
+    }
+
+    .sidebar-nav {
+      flex: 1;
+      padding: 12px 0;
+      overflow-y: auto;
+    }
+
+    .nav-group {
+      padding: 8px 24px 4px;
+      font-size: 11px;
+      color: rgba(0, 0, 0, 0.45);
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 24px;
+      cursor: pointer;
+      font-size: 13px;
+      color: rgba(0, 0, 0, 0.65);
+      border-left: 2px solid transparent;
+      transition: background 0.15s, color 0.15s;
+    }
+
+    .nav-item:hover {
+      background: #f5f5f5;
+      color: rgba(0, 0, 0, 0.88);
+    }
+
+    .nav-item.active {
+      background: #eef2ff;
+      color: #5b5ce2;
+      font-weight: 500;
+      border-left-color: #5b5ce2;
+    }
+
+    .nav-item .nav-icon {
+      width: 14px;
+      height: 14px;
+      flex-shrink: 0;
+      color: currentColor;
+    }
+
+    .nav-item .nav-meta {
+      margin-left: auto;
+      font-size: 11px;
+      color: rgba(0, 0, 0, 0.35);
+    }
+
+    .sidebar-footer {
+      padding: 12px 24px;
+      border-top: 1px solid #f0f0f0;
+      font-size: 11px;
+      color: rgba(0, 0, 0, 0.35);
+      line-height: 1.6;
+    }
+
+    .sidebar-footer a {
+      color: #5b5ce2;
+    }
+
+    /* ====== 主内容 ====== */
+    main.content {
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .topbar {
+      height: 56px;
+      background: #ffffff;
+      border-bottom: 1px solid #e5e7eb;
+      padding: 0 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+
+    .topbar-breadcrumb {
+      font-size: 13px;
+      color: rgba(0, 0, 0, 0.65);
+    }
+
+    .topbar-breadcrumb .separator {
+      margin: 0 8px;
+      color: rgba(0, 0, 0, 0.25);
+    }
+
+    .topbar-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .topbar-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 0 12px;
+      height: 30px;
+      border: 1px solid #d9d9d9;
+      border-radius: 6px;
+      background: #ffffff;
+      color: rgba(0, 0, 0, 0.65);
+      font-size: 13px;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.15s;
+    }
+
+    .topbar-btn:hover {
+      border-color: #5b5ce2;
+      color: #5b5ce2;
+    }
+
+    /* ====== 文档主体 ====== */
+    .doc-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 32px 0;
+    }
+
+    .doc-container {
+      max-width: 880px;
+      margin: 0 auto;
+      padding: 0 32px 80px;
+    }
+
+    .doc-loading {
+      text-align: center;
+      padding: 80px 0;
+      color: rgba(0, 0, 0, 0.45);
+      font-size: 14px;
+    }
+
+    .doc-loading::before {
+      content: "";
+      display: inline-block;
+      width: 32px;
+      height: 32px;
+      border: 3px solid #f0f0f0;
+      border-top-color: #5b5ce2;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin-bottom: 12px;
+      vertical-align: middle;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .doc-error {
+      background: #fff1f0;
+      border: 1px solid #ffa39e;
+      color: #cf1322;
+      padding: 16px 20px;
+      border-radius: 8px;
+      font-size: 13px;
+      line-height: 1.7;
+    }
+
+    .doc-error strong { display: block; margin-bottom: 6px; font-size: 14px; }
+
+    .doc-rendered { display: none; }
+    .doc-rendered.show { display: block; }
+
+    /* ====== Markdown 样式 ====== */
+    .md {
+      font-size: 15px;
+      line-height: 1.75;
+      color: rgba(0, 0, 0, 0.88);
+    }
+
+    .md h1 {
+      font-size: 28px;
+      font-weight: 700;
+      color: rgba(0, 0, 0, 0.88);
+      margin: 32px 0 16px;
+      padding-bottom: 12px;
+      border-bottom: 2px solid #f0f0f0;
+    }
+
+    .md h2 {
+      font-size: 22px;
+      font-weight: 600;
+      color: rgba(0, 0, 0, 0.88);
+      margin: 40px 0 12px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid #f5f5f5;
+    }
+
+    .md h3 {
+      font-size: 18px;
+      font-weight: 600;
+      color: rgba(0, 0, 0, 0.88);
+      margin: 28px 0 10px;
+    }
+
+    .md h4 {
+      font-size: 15px;
+      font-weight: 600;
+      color: rgba(0, 0, 0, 0.88);
+      margin: 20px 0 8px;
+    }
+
+    .md p {
+      margin: 12px 0;
+    }
+
+    .md strong {
+      font-weight: 600;
+      color: rgba(0, 0, 0, 0.88);
+    }
+
+    .md em { font-style: italic; color: rgba(0, 0, 0, 0.65); }
+
+    .md ul, .md ol {
+      margin: 12px 0;
+      padding-left: 24px;
+    }
+
+    .md li {
+      margin: 6px 0;
+    }
+
+    .md li > p { margin: 4px 0; }
+
+    .md hr {
+      border: none;
+      border-top: 1px solid #f0f0f0;
+      margin: 28px 0;
+    }
+
+    /* ====== 代码块 ====== */
+    .md code {
+      background: #f5f5f5;
+      border: 1px solid #f0f0f0;
+      border-radius: 4px;
+      padding: 2px 6px;
+      font-family: 'SF Mono', Menlo, Consolas, monospace;
+      font-size: 0.88em;
+      color: #d4380d;
+    }
+
+    .md pre {
+      background: #1f2937;
+      color: #e5e7eb;
+      padding: 16px 20px;
+      border-radius: 8px;
+      overflow-x: auto;
+      margin: 16px 0;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .md pre code {
+      background: transparent;
+      border: none;
+      padding: 0;
+      color: inherit;
+      font-size: 13px;
+    }
+
+    /* ====== 引用 ====== */
+    .md blockquote {
+      background: #f5f7fa;
+      border-left: 3px solid #5b5ce2;
+      padding: 12px 16px;
+      margin: 16px 0;
+      border-radius: 0 6px 6px 0;
+      color: rgba(0, 0, 0, 0.75);
+    }
+
+    .md blockquote p { margin: 4px 0; }
+    .md blockquote p:first-child { margin-top: 0; }
+    .md blockquote p:last-child { margin-bottom: 0; }
+
+    /* ====== 表格 ====== */
+    .md table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 16px 0;
+      font-size: 13px;
+      border: 1px solid #e7ebf3;
+      border-radius: 6px;
+      overflow: hidden;
+    }
+
+    .md thead {
+      background: #fafbfc;
+    }
+
+    .md th {
+      padding: 10px 14px;
+      text-align: left;
+      font-weight: 600;
+      color: rgba(0, 0, 0, 0.85);
+      border-bottom: 1px solid #e7ebf3;
+      white-space: nowrap;
+    }
+
+    .md td {
+      padding: 10px 14px;
+      border-bottom: 1px solid #f0f0f0;
+      color: rgba(0, 0, 0, 0.75);
+      vertical-align: top;
+    }
+
+    .md tbody tr:last-child td { border-bottom: none; }
+    .md tbody tr:hover { background: #fafbfc; }
+
+    /* ====== 链接 ====== */
+    .md a {
+      color: #5b5ce2;
+      text-decoration: none;
+      border-bottom: 1px dashed #d6d6f5;
+    }
+
+    .md a:hover { border-bottom-style: solid; }
+
+    /* ====== 内联徽章 ====== */
+    .md .badge {
+      display: inline-block;
+      padding: 1px 6px;
+      background: #eef2ff;
+      color: #5b5ce2;
+      border-radius: 3px;
+      font-size: 11px;
+      font-weight: 500;
+      margin: 0 2px;
+    }
+
+    /* ====== 任务列表 ====== */
+    .md input[type="checkbox"] {
+      margin-right: 6px;
+      cursor: not-allowed;
+    }
+
+    /* ====== TOC ====== */
+    .toc {
+      background: #fafbfc;
+      border: 1px solid #e7ebf3;
+      border-radius: 8px;
+      padding: 16px 20px;
+      margin-bottom: 24px;
+    }
+
+    .toc-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: rgba(0, 0, 0, 0.65);
+      margin-bottom: 8px;
+    }
+
+    .toc-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .toc-list li {
+      margin: 4px 0;
+    }
+
+    .toc-list a {
+      color: rgba(0, 0, 0, 0.65);
+      font-size: 13px;
+      text-decoration: none;
+      padding: 2px 0;
+      display: inline-block;
+    }
+
+    .toc-list a:hover { color: #5b5ce2; }
+
+    .toc-list .level-3 { padding-left: 16px; font-size: 12px; }
+
+    /* ====== 响应式 ====== */
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+      aside.sidebar {
+        position: relative;
+        max-height: none;
+        border-right: none;
+        border-bottom: 1px solid #e5e7eb;
+      }
+      .doc-container { padding: 0 16px 60px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <!-- ====== 侧边栏 ====== -->
+    <aside class="sidebar">
+      <div class="sidebar-logo">
+        <div class="sidebar-logo-title">📚 需求文档中心</div>
+        <div class="sidebar-logo-sub">创也·乾坤 产品 PRD · 2026-09-03</div>
+      </div>
+
+      <div class="sidebar-search">
+        <input type="text" id="searchInput" placeholder="搜索文档标题..." />
+      </div>
+
+      <nav class="sidebar-nav" id="sidebarNav">
+        <div class="nav-group">📐 模板</div>
+        <a class="nav-item" href="docs/_template.md" data-doc="_template">
+          <svg class="nav-icon" viewBox="64 64 896 896" fill="currentColor"><path d="M880 256H144c-17.7 0-32 14.3-32 32v448c0 17.7 14.3 32 32 32h784c17.7 0 32-14.3 32-32V288c0-17.7-14.3-32-32-32zM304 280h416v48H304v-48zm0 96h416v48H304v-48zm0 96h256v48H304v-48z"></path></svg>
+          <span>PRD 模板</span>
+          <span class="nav-meta">template</span>
+        </a>
+
+        <div class="nav-group">🚀 入口</div>
+        <a class="nav-item" href="index.html">
+          <svg class="nav-icon" viewBox="64 64 896 896" fill="currentColor"><path d="M832 64H192c-17.7 0-32 14.3-32 32v832c0 17.7 14.3 32 32 32h640c17.7 0 32-14.3 32-32V96c0-17.7-14.3-32-32-32zM304 280h416v48H304v-48zm0 96h416v48H304v-48zm0 96h256v48H304v-48z"></path></svg>
+          <span>原型入口</span>
+          <span class="nav-meta">index.html</span>
+        </a>
+
+        <div class="nav-group">📄 终端租户</div>
+        <a class="nav-item" href="docs/register.md" data-doc="register">
+          <svg class="nav-icon" viewBox="64 64 896 896" fill="currentColor"><path d="M880 256H144c-17.7 0-32 14.3-32 32v448c0 17.7 14.3 32 32 32h784c17.7 0 32-14.3 32-32V288c0-17.7-14.3-32-32-32z"></path></svg>
+          <span>注册页面 PRD</span>
+          <span class="nav-meta">register</span>
+        </a>
+        <a class="nav-item" href="docs/subscribe.md" data-doc="subscribe">
+          <svg class="nav-icon" viewBox="64 64 896 896" fill="currentColor"><path d="M880 256H144c-17.7 0-32 14.3-32 32v448c0 17.7 14.3 32 32 32h784c17.7 0 32-14.3 32-32V288c0-17.7-14.3-32-32-32z"></path></svg>
+          <span>续费引导 PRD</span>
+          <span class="nav-meta">subscribe</span>
+        </a>
+        <a class="nav-item" href="docs/settings.md" data-doc="settings">
+          <svg class="nav-icon" viewBox="64 64 896 896" fill="currentColor"><path d="M600.7 364.3c-25.1-25.1-65.8-25.1-90.9 0l-30.1 30.1c-46.7 46.7-46.7 122.4 0 169.1l81.5 81.5c46.7 46.7 122.4 46.7 169.1 0L775 599.6c25.1-25.1 25.1-65.8 0-90.9l-30.1-30.1c-25.1-25.1-65.8-25.1-90.9 0L632.9 499.7c-7.6 7.6-19.8 7.6-27.4 0l-30.1-30.1c-7.6-7.6-7.6-19.8 0-27.4l21.1-21.1c25.1-25.1 25.1-65.8 0-90.9z"></path></svg>
+          <span>全局设置 PRD</span>
+          <span class="nav-meta">settings</span>
+        </a>
+
+        <div class="nav-group">🛠 平台管理端</div>
+        <a class="nav-item" href="docs/tenants.md" data-doc="tenants">
+          <svg class="nav-icon" viewBox="64 64 896 896" fill="currentColor"><path d="M512 64C264.6 64 64 264.6 64 512s200.6 448 448 448 448-200.6 448-448S759.4 64 512 64z"></path></svg>
+          <span>租户管理 PRD</span>
+          <span class="nav-meta">tenants</span>
+        </a>
+        <a class="nav-item" href="partner-prd.md" data-doc="partner-prd">
+          <svg class="nav-icon" viewBox="64 64 896 896" fill="currentColor"><path d="M512 64C264.6 64 64 264.6 64 512s200.6 448 448 448 448-200.6 448-448S759.4 64 512 64z"></path></svg>
+          <span>合伙人平台 PRD</span>
+          <span class="nav-meta">partner</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <a href="https://github.com/qigang2026/yeiyeiai" target="_blank" rel="noopener">GitHub 仓库</a>
+        · 由 docs.html 提供渲染
+      </div>
+    </aside>
+
+    <!-- ====== 主内容 ====== -->
+    <main class="content">
+      <header class="topbar">
+        <div class="topbar-breadcrumb" id="breadcrumb">
+          <span>文档中心</span>
+          <span class="separator">/</span>
+          <span id="currentDocName">请从左侧选择</span>
+        </div>
+        <div class="topbar-actions">
+          <button class="topbar-btn" id="copyRawBtn" title="复制原始 Markdown">
+            <svg viewBox="64 64 896 896" width="14" height="14" fill="currentColor"><path d="M832 64H192c-17.7 0-32 14.3-32 32v832c0 17.7 14.3 32 32 32h640c17.7 0 32-14.3 32-32V96c0-17.7-14.3-32-32-32zm-40 64v128H232V128h560zm0 768H232V320h560v576z"></path></svg>
+            复制原文
+          </button>
+          <a class="topbar-btn" id="rawLink" href="docs/register.md" target="_blank" rel="noopener">
+            <svg viewBox="64 64 896 896" width="14" height="14" fill="currentColor"><path d="M880 256H144c-17.7 0-32 14.3-32 32v448c0 17.7 14.3 32 32 32h784c17.7 0 32-14.3 32-32V288c0-17.7-14.3-32-32-32z"></path></svg>
+            打开源文件
+          </a>
+        </div>
+      </header>
+
+      <div class="doc-body">
+        <div class="doc-container">
+          <div class="doc-loading" id="loadingState" style="display:none;">正在加载文档...</div>
+          <div class="doc-error" id="errorState" style="display:none;"></div>
+          <article class="md doc-rendered" id="docContent"></article>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    (function () {
+      'use strict';
+
+      const $ = (s) => document.querySelector(s);
+
+      // ====== 文档列表（与侧边栏对应） ======
+      const docs = {
+        'register': {
+          name: '注册页面 PRD',
+          url: 'docs/register.md',
+          path: '/register.html',
+        },
+        'subscribe': {
+          name: '续费引导 PRD',
+          url: 'docs/subscribe.md',
+          path: '/subscribe.html',
+        },
+        'settings': {
+          name: '全局设置 PRD',
+          url: 'docs/settings.md',
+          path: '/settings.html',
+        },
+        'tenants': {
+          name: '租户管理 PRD',
+          url: 'docs/tenants.md',
+          path: '/tenants.html',
+        },
+        '_template': {
+          name: 'PRD 模板',
+          url: 'docs/_template.md',
+          path: null,
+        },
+        'partner-prd': {
+          name: '合伙人平台 PRD',
+          url: 'partner-prd.md',
+          path: '/partner-dashboard.html',
+        },
+      };
+
+      let currentDocRaw = '';
+      let currentDocKey = '';
+
+      // ====== 简易 Markdown 渲染器 ======
+      function escapeHtml(s) {
+        return s
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#39;');
+      }
+
+      function renderInline(s) {
+        // 顺序：图片 → 链接 → 行内代码 → 加粗 → 斜体
+        return s
+          // 图片 ![alt](src)
+          .replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img alt="$1" src="$2" style="max-width:100%;">')
+          // 链接 [text](url)
+          .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>')
+          // 行内代码 `code`
+          .replace(/`([^`]+)`/g, '<code>$1</code>')
+          // 加粗 **text**
+          .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+          // 斜体 *text*
+          .replace(/(^|[^*])\*([^*\s][^*]*?)\*(?!\*)/g, '$1<em>$2</em>')
+          // 删除线 ~~text~~
+          .replace(/~~([^~]+)~~/g, '<del>$1</del>');
+      }
+
+      function renderMarkdown(md) {
+        const lines = md.split('\n');
+        const out = [];
+        let i = 0;
+        let inCodeBlock = false;
+        let codeLang = '';
+        let codeBuf = [];
+
+        while (i < lines.length) {
+          const line = lines[i];
+
+          // 代码块
+          if (/^```/.test(line)) {
+            if (!inCodeBlock) {
+              inCodeBlock = true;
+              codeLang = line.replace(/^```/, '').trim();
+              codeBuf = [];
+            } else {
+              inCodeBlock = false;
+              out.push(`<pre><code class="lang-${escapeHtml(codeLang)}">${escapeHtml(codeBuf.join('\n'))}</code></pre>`);
+            }
+            i++;
+            continue;
+          }
+          if (inCodeBlock) {
+            codeBuf.push(line);
+            i++;
+            continue;
+          }
+
+          // 水平线
+          if (/^---+$/.test(line.trim())) {
+            out.push('<hr>');
+            i++;
+            continue;
+          }
+
+          // 标题 # ## ### ####
+          const h = line.match(/^(#{1,6})\s+(.+)$/);
+          if (h) {
+            const level = h[1].length;
+            const text = h[2].trim();
+            const id = slugify(text);
+            out.push(`<h${level} id="${id}">${renderInline(escapeHtml(text))}</h${level}>`);
+            i++;
+            continue;
+          }
+
+          // 引用 >
+          if (/^>\s?/.test(line)) {
+            const quoteLines = [];
+            while (i < lines.length && /^>\s?/.test(lines[i])) {
+              quoteLines.push(lines[i].replace(/^>\s?/, ''));
+              i++;
+            }
+            out.push(`<blockquote>${quoteLines.map(l => `<p>${renderInline(escapeHtml(l))}</p>`).join('')}</blockquote>`);
+            continue;
+          }
+
+          // 表格（GFM 风格）
+          if (/^\|.*\|$/.test(line) && i + 1 < lines.length && /^\|[\s\-:|]+\|$/.test(lines[i + 1])) {
+            const headerCells = line.split('|').slice(1, -1).map(c => c.trim());
+            i += 2; // 跳过表头和分隔行
+            const rows = [];
+            while (i < lines.length && /^\|.*\|$/.test(lines[i])) {
+              const rowCells = lines[i].split('|').slice(1, -1).map(c => c.trim());
+              rows.push(rowCells);
+              i++;
+            }
+            out.push('<table>');
+            out.push('<thead><tr>' + headerCells.map(c => `<th>${renderInline(escapeHtml(c))}</th>`).join('') + '</tr></thead>');
+            out.push('<tbody>');
+            rows.forEach(row => {
+              out.push('<tr>' + row.map(c => `<td>${renderInline(escapeHtml(c))}</td>`).join('') + '</tr>');
+            });
+            out.push('</tbody></table>');
+            continue;
+          }
+
+          // 任务列表 - [ ] - [x]
+          if (/^\s*-\s+\[[ x]\]\s+/.test(line)) {
+            const items = [];
+            while (i < lines.length && /^\s*-\s+\[[ x]\]\s+/.test(lines[i])) {
+              const checked = /\[[x]\]/i.test(lines[i]);
+              const text = lines[i].replace(/^\s*-\s+\[[ x]\]\s+/, '');
+              items.push(`<li><input type="checkbox" disabled ${checked ? 'checked' : ''}>${renderInline(escapeHtml(text))}</li>`);
+              i++;
+            }
+            out.push('<ul>' + items.join('') + '</ul>');
+            continue;
+          }
+
+          // 无序列表
+          if (/^\s*-\s+/.test(line) || /^\s*\*\s+/.test(line)) {
+            const items = [];
+            while (i < lines.length && (/^\s*-\s+/.test(lines[i]) || /^\s*\*\s+/.test(lines[i]))) {
+              const text = lines[i].replace(/^\s*[-*]\s+/, '');
+              items.push(`<li>${renderInline(escapeHtml(text))}</li>`);
+              i++;
+            }
+            out.push('<ul>' + items.join('') + '</ul>');
+            continue;
+          }
+
+          // 有序列表
+          if (/^\s*\d+\.\s+/.test(line)) {
+            const items = [];
+            while (i < lines.length && /^\s*\d+\.\s+/.test(lines[i])) {
+              const text = lines[i].replace(/^\s*\d+\.\s+/, '');
+              items.push(`<li>${renderInline(escapeHtml(text))}</li>`);
+              i++;
+            }
+            out.push('<ol>' + items.join('') + '</ol>');
+            continue;
+          }
+
+          // 空行
+          if (line.trim() === '') {
+            i++;
+            continue;
+          }
+
+          // 段落
+          const paraLines = [];
+          while (i < lines.length && lines[i].trim() !== '' && !/^(#{1,6}\s|>\s|-\s|\*\s|\d+\.\s|\||```|---\s*$)/.test(lines[i])) {
+            paraLines.push(lines[i]);
+            i++;
+          }
+          if (paraLines.length) {
+            out.push(`<p>${renderInline(escapeHtml(paraLines.join('\n')))}</p>`);
+          }
+        }
+
+        return out.join('\n');
+      }
+
+      function slugify(text) {
+        return text
+          .toLowerCase()
+          .replace(/[\s\u4e00-\u9fa5]+/g, '-')
+          .replace(/[^\w\-]/g, '')
+          .replace(/-+/g, '-')
+          .replace(/^-|-$/g, '') || 'section';
+      }
+
+      // ====== 加载文档 ======
+      async function loadDoc(key) {
+        const doc = docs[key];
+        if (!doc) return;
+
+        currentDocKey = key;
+        const loading = $('#loadingState');
+        const error = $('#errorState');
+        const content = $('#docContent');
+
+        loading.style.display = 'block';
+        error.style.display = 'none';
+        content.classList.remove('show');
+        content.innerHTML = '';
+
+        // 更新激活态
+        $$('.nav-item[data-doc]').forEach((n) => n.classList.toggle('active', n.dataset.doc === key));
+        $('#currentDocName').textContent = doc.name;
+        $('#rawLink').href = doc.url;
+
+        try {
+          const resp = await fetch(doc.url);
+          if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+          const md = await resp.text();
+          currentDocRaw = md;
+          loading.style.display = 'none';
+          content.innerHTML = renderMarkdown(md);
+          content.classList.add('show');
+          // 滚动到顶部
+          $('.doc-body').scrollTop = 0;
+        } catch (e) {
+          loading.style.display = 'none';
+          error.style.display = 'block';
+          error.innerHTML = `<strong>⚠ 加载失败</strong>无法加载文档 <code>${doc.url}</code>：${e.message}<br>请检查文件是否存在或网络是否正常。`;
+        }
+      }
+
+      function $$(s) { return Array.from(document.querySelectorAll(s)); }
+
+      // ====== 事件绑定 ======
+      function bindEvents() {
+        $$('.nav-item[data-doc]').forEach((item) => {
+          item.addEventListener('click', (e) => {
+            e.preventDefault();
+            const key = item.dataset.doc;
+            // 更新 URL hash
+            window.location.hash = key;
+            loadDoc(key);
+          });
+        });
+
+        $('#searchInput').addEventListener('input', (e) => {
+          const kw = e.target.value.toLowerCase().trim();
+          $$('.nav-item').forEach((item) => {
+            const text = item.textContent.toLowerCase();
+            item.style.display = !kw || text.includes(kw) ? '' : 'none';
+          });
+        });
+
+        $('#copyRawBtn').addEventListener('click', async () => {
+          if (!currentDocRaw) return;
+          try {
+            await navigator.clipboard.writeText(currentDocRaw);
+            const btn = $('#copyRawBtn');
+            const orig = btn.innerHTML;
+            btn.innerHTML = '✓ 已复制';
+            setTimeout(() => { btn.innerHTML = orig; }, 1500);
+          } catch (e) {
+            alert('复制失败：' + e.message);
+          }
+        });
+      }
+
+      // ====== 初始化 ======
+      function init() {
+        bindEvents();
+        // 从 URL hash 决定初始文档
+        const hash = window.location.hash.replace('#', '');
+        const initialKey = docs[hash] ? hash : 'register';
+        loadDoc(initialKey);
+      }
+
+      init();
+    })();
+  </script>
+</body>
+</html>
