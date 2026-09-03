@@ -101,18 +101,18 @@
 
 ### 3.3 关键交互清单
 
-| 编号 | 触发元素 | 用户动作 | 预期反馈 | 数据流 |
-| --- | --- | --- | --- | --- |
-| INT-001 | 侧边栏「全局设置」 | 点击 | 跳转 settings.html | URL 跳转 |
-| INT-002 | Tab 切换 | 点击 | 切换右侧内容区 | 前端切换 |
-| INT-003 | [新增店铺] | 点击 | 弹窗打开，平台类型 / 接口数 / 启停用 | 前端表单 |
-| INT-004 | [保存全局设置]（顶部） | 点击 | 调保存接口，按钮 loading → 成功 toast | `POST /api/tenant/settings` |
-| INT-005 | 表格行 [编辑] | 点击 | 复用新增弹窗，回填字段 | — |
-| INT-006 | 表格行 [删除] | 点击 | 二次确认弹窗 → 删除 | `DELETE /api/stores/:id` |
-| INT-007 | 启用 switch | 点击 | 切换启用状态，立即保存 | `PATCH /api/stores/:id` |
-| INT-008 | AI 服务商预设下拉 | 切换 | 自动填入 Base URL / 模型名 | 纯前端 |
-| INT-009 | [测试 AI 连接] | 点击 | loading → 通过绿色 ✓ 或失败红色 ✗ | `POST /api/ai/test` |
-| INT-010 | 续期租户 / 升级 链接 | 点击 | 新窗口跳 /subscribe.html | URL 跳转 |
+| 编号 | 触发元素 | 用户动作 | 预期反馈 |
+| --- | --- | --- | --- |
+| INT-001 | 侧边栏「全局设置」 | 点击 | 跳转到设置页 |
+| INT-002 | Tab 切换 | 点击 | 切换右侧内容区 |
+| INT-003 | [新增店铺] | 点击 | 弹窗打开，填写平台类型 / 接口数 / 启停用 |
+| INT-004 | [保存全局设置]（顶部） | 点击 | 按钮 loading → 成功提示 |
+| INT-005 | 表格行 [编辑] | 点击 | 复用新增弹窗，回填字段 |
+| INT-006 | 表格行 [删除] | 点击 | 二次确认弹窗 → 删除 |
+| INT-007 | 启用开关 | 点击 | 切换启用状态，立即保存 |
+| INT-008 | AI 服务商预设下拉 | 切换 | 自动填入 Base URL / 模型名 |
+| INT-009 | [测试 AI 连接] | 点击 | loading → 通过绿色 ✓ 或失败红色 ✗ |
+| INT-010 | 续期租户 / 升级 链接 | 点击 | 新窗口跳到续费引导页 |
 
 ---
 
@@ -159,7 +159,7 @@
 **业务规则**：
 - 接口至少 1 个，可加多个
 - 每个接口需 client_id + api_key
-- 保存时调 `POST /api/stores`，成功后表格新增一行
+- 保存时调保存接口，成功后表格新增一行
 
 #### 4.1.4 状态机
 
@@ -225,156 +225,60 @@
 
 ---
 
-## 5. 数据契约
+## 5. 交互细节与校验规则
 
-### 5.1 后端 API
-
-| 接口 | 方法 | 路径 | 请求体 | 响应体 | 错误码 |
-| --- | --- | --- | --- | --- | --- |
-| 查租户到期信息 | GET | `/api/tenant/info` | — | `{plan_name, expire_at, days_remaining}` | — |
-| 查店铺列表 | GET | `/api/stores` | — | `{stores: [Store]}` | — |
-| 新增店铺 | POST | `/api/stores` | `Store` | `{store_id}` | 40301-40399 |
-| 编辑店铺 | PUT | `/api/stores/:id` | `Store` | `{store_id}` | — |
-| 删除店铺 | DELETE | `/api/stores/:id` | — | `{success: boolean}` | — |
-| 启用/停用 | PATCH | `/api/stores/:id` | `{enabled: bool}` | `{success: boolean}` | — |
-| 查 AI 配置 | GET | `/api/ai/config` | — | `AIConfig` | — |
-| 保存 AI 配置 | POST | `/api/ai/config` | `AIConfig` | `{success: boolean}` | — |
-| 测试 AI 连接 | POST | `/api/ai/test` | `{provider, text_model}` | `{success, latency_ms, error?}` | — |
-| 测试视觉连接 | POST | `/api/ai/test-vision` | `{provider, vision_model}` | `{success, latency_ms, error?}` | — |
-| 查汇率 | GET | `/api/exchange-rates` | — | `ExchangeRates` | — |
-| 保存汇率 | POST | `/api/exchange-rates` | `ExchangeRates` | `{success: boolean}` | — |
-
-### 5.2 关键字段定义
-
-```typescript
-interface Store {
-  store_id: string;
-  store_name: string;
-  platform_type: 'ozon-local' | 'ozon-cross' | 'wb-local' | 'wb-cross';
-  currency: 'RUB' | 'USD' | 'CNY';
-  interfaces: StoreInterface[];
-  enabled: boolean;
-  created_at: string;
-}
-
-interface StoreInterface {
-  client_id: string;
-  api_key: string;          // 返回时脱敏为 '****'
-}
-
-interface AIConfig {
-  provider: 'chuangye' | 'openai' | 'deepseek' | 'custom';
-  base_url: string;
-  api_key: string;
-  text_model: string;
-  vision_model?: string;
-  text_timeout: number;     // 秒
-  vision_timeout: number;
-  vision_max_size: number;  // px
-}
-
-interface ExchangeRates {
-  cny_to_rub: number;
-  usd_to_rub: number;
-  cny_to_usd: number;
-  effective_at: string;
-  source: 'manual' | 'auto';
-}
-```
-
----
-
-## 6. 交互细节与校验规则
-
-### 6.1 表单校验
+### 5.1 表单校验
 
 | 字段 | 触发时机 | 规则 | 错误提示 |
 | --- | --- | --- | --- |
-| 店铺名称 | 失焦 + 提交 | 非空，1-200，唯一 | 店铺名称已存在 |
-| Client ID | 失焦 + 提交 | 非空，长度 4-50 | 请输入 Client ID |
-| API Key | 失焦 + 提交 | 非空，长度 ≥ 20 | 请输入 API Key |
-| Base URL | 失焦 + 提交 | URL 格式 | Base URL 格式不正确 |
-| 文本模型 | 失焦 + 提交 | 非空 | 请输入文本模型名 |
-| 视觉模型 | 失焦（如果填了） | 非空 | — |
-| 汇率数值 | 失焦 + 提交 | > 0, ≤ 上限 | 汇率超出合理范围 |
+| 店铺名称 | 用户离开输入框时 + 提交时 | 非空，1-200，唯一 | 店铺名称已存在 |
+| Client ID | 用户离开输入框时 + 提交时 | 非空，长度 4-50 | 请输入 Client ID |
+| API Key | 用户离开输入框时 + 提交时 | 非空，长度 ≥ 20 | 请输入 API Key |
+| Base URL | 用户离开输入框时 + 提交时 | URL 格式 | Base URL 格式不正确 |
+| 文本模型 | 用户离开输入框时 + 提交时 | 非空 | 请输入文本模型名 |
+| 视觉模型 | 用户离开输入框时（如果填了） | 非空 | — |
+| 汇率数值 | 用户离开输入框时 + 提交时 | > 0, ≤ 上限 | 汇率超出合理范围 |
 
-### 6.2 异常路径
+### 5.2 异常路径
 
 | 异常场景 | 触发条件 | 用户感知 | 系统处理 |
 | --- | --- | --- | --- |
-| 网络断开 | `navigator.onLine === false` | 顶部黄色 banner | 阻断保存 |
-| 保存接口 500 | 后端错误 | 顶部红色 toast | 不自动重试 |
+| 网络断开 | 用户无网络 | 顶部黄色提示 | 阻断保存 |
+| 保存失败 | 后端报错 | 顶部红色提示 | 不自动重试 |
 | AI 测试超时 | 30 秒无响应 | 红色 ✗ + 「连接超时」 | 立即停止 |
 | 删除店铺 | 有未完成任务 | 二次确认弹窗 | 提示「有 N 个 SKU 正在分析」 |
 | 多个 tab 同时编辑 | 前端检测 | 锁定非激活 tab | 防止覆盖 |
 
-### 6.3 可访问性
+### 5.3 可访问性
 
-- Tab 用 `role="tablist"` + `role="tab"` + `aria-selected`
+> 给有视力障碍用户使用的辅助功能。
+
+- Tab 用语义化标签 + `aria-selected`
 - 表格行内操作按钮单独可达
-- 「测试 AI 连接」loading 时 `aria-live="polite"` 通知结果
+- 「测试 AI 连接」加载时自动通知屏幕阅读器结果
 
 ---
 
-## 7. 异常与边界场景
+## 6. 异常与边界场景
 
-### 7.1 数据边界
+### 6.1 数据边界
 
 - **店铺列表为空**：显示「暂无数据」+ 引导到「新增店铺」
-- **店铺数量上限**：根据套餐不同（1m: 1 个, 6m: 5 个, 12m: 20 个），超限提示「请先升级套餐」
-- **API Key 长度极长**：maxLength 512，不报错
+- **店铺数量上限**：根据套餐不同（1 个月: 1 个, 6 个月: 5 个, 12 个月: 20 个），超限提示「请先升级套餐」
+- **API Key 长度极长**：最多 512 字符，不报错
 - **Base URL 含端口**：`https://api.example.com:8443/v1` 正常支持
 
-### 7.2 业务边界
+### 6.2 业务边界
 
 - **删除店铺前**：检查是否有未完成的 AI 任务
 - **修改 AI 配置**：所有正在运行的 AI 任务使用旧配置，新任务用新配置
-- **汇率并发修改**：乐观锁版本号，最后写入的覆盖前面的，提示「汇率已被他人更新」
+- **汇率并发修改**：最后写入的覆盖前面的，提示「汇率已被他人更新」
 
 ---
 
-## 8. 前端实现要点 (HTML → 组件映射)
+## 7. 验收标准
 
-### 8.1 组件拆分建议
-
-| HTML 区块 | 推荐组件名 | 复用范围 | 备注 |
-| --- | --- | --- | --- |
-| 侧边栏 | `<AppSidebar>` | 全局 | register / settings / tenants |
-| 顶部栏 | `<AppTopbar>` | 全局 | |
-| Tabs | `<TabBar>` | 全局 | |
-| 租户横幅 | `<TenantBanner>` | settings / subscribe | |
-| 工具栏 | `<TableToolbar>` | 全局 | settings / tenants |
-| 店铺表格 | `<StoreTable>` | settings | |
-| 新增店铺弹窗 | `<StoreFormModal>` | settings | |
-| AI 配置表单 | `<AIConfigForm>` | settings | |
-| 汇率表单 | `<ExchangeRateForm>` | settings | |
-| Switch 开关 | `<Switch>` | 全局 | settings / tenants |
-
-### 8.2 状态管理
-
-- **本地状态**：当前激活 tab、弹窗开关、表单字段
-- **服务端状态**：店铺列表（推荐 SWR）、AI 配置、汇率
-- **全局状态**：用户信息、租户到期状态
-
-### 8.3 关键技术决策
-
-| 决策点 | 推荐方案 | 理由 |
-| --- | --- | --- |
-| 表单库 | React Hook Form + Zod | 与 register 一致 |
-| Switch 组件 | rc-switch 或自研 | Ant Design 已有 |
-| AI 配置持久化 | localStorage + 后端 | 用户切换不会丢失 |
-| 测试 AI 连接 | axios + timeout 30s | 简单可控 |
-
-### 8.4 与现有代码的对接
-
-- 复用 `<TenantBanner>`（与 subscribe 通用）
-- 复用样式：`@color-danger: #ff4d4f`、`@color-warning: #faad14`
-- 国际化：`settings.store.tab.*`、`settings.ai.provider.*`
-- 与 `tenants.html` 联动：店铺列表只显示当前租户下的，与租户管理页对应
-
----
-
-## 9. 验收标准 / Definition of Done
+> 上线前必须满足的条件，每条都打勾才算完成。
 
 - [ ] **功能完整性**：
   - [ ] 4 个 tab 都能正常切换
@@ -382,13 +286,13 @@ interface ExchangeRates {
   - [ ] AI 配置预设切换自动填入
   - [ ] 「测试 AI 连接」能正确显示成功/失败
   - [ ] 汇率修改立即生效
-- [ ] **校验规则**：§6.1 所有字段校验均实现
-- [ ] **异常路径**：§7 所有边界场景均有测试覆盖
-- [ ] **性能**：首屏 < 1.5s，AI 测试 < 30s
+- [ ] **校验规则**：§5.1 所有字段校验均实现
+- [ ] **异常路径**：§6 所有边界场景均有测试覆盖
+- [ ] **性能**：首屏加载 < 1.5 秒，AI 测试 < 30 秒
 - [ ] **浏览器兼容**：Chrome 100+ / Safari 15+ / Edge 100+
-- [ ] **响应式**：≥ 1280px、1024px、768px 三个断点
-- [ ] **a11y**：键盘可完全操作
-- [ ] **埋点**：每个 tab 切换、每次保存、每次 AI 测试
+- [ ] **响应式**：≥ 1280px、1024px、768px 三个屏幕宽度下都验证过
+- [ ] **无障碍**：键盘可完全操作
+- [ ] **数据埋点**：每个 tab 切换、每次保存、每次 AI 测试
 - [ ] **设计走查**：UI 同事 review 通过
 - [ ] **对接回归**：
   - [ ] 与 `tenants.html` 的租户状态联动
@@ -396,7 +300,7 @@ interface ExchangeRates {
 
 ---
 
-## 10. 未来迭代 (Out of Scope)
+## 8. 未来迭代 (本期不做)
 
 | 版本 | 计划内容 | 价值评估 |
 | --- | --- | --- |
@@ -407,8 +311,9 @@ interface ExchangeRates {
 
 ---
 
-## 11. 修订记录
+## 9. 修订记录
 
 | 版本 | 日期 | 修改人 | 修改内容 |
 | --- | --- | --- | --- |
 | v1.0 | 2026-09-03 | 平台产品组 | 初稿 |
+| v1.1 | 2026-09-03 | 平台产品组 | 移除技术细节章节（API/接口/组件映射），统一为产品语言 |
