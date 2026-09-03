@@ -1,0 +1,1445 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>全局设置 - 创也·乾坤平台</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      height: 100%;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+        "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      color: rgba(0, 0, 0, 0.88);
+      -webkit-font-smoothing: antialiased;
+      background: #f5f7fa;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 260px 1fr;
+      min-height: 100vh;
+    }
+
+    /* ====== 侧边栏 ====== */
+    aside.sidebar {
+      background: #ffffff;
+      border-right: 1px solid #e5e7eb;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .sidebar-logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 18px 20px;
+      border-bottom: 1px solid #f0f0f0;
+      font-size: 15px;
+      font-weight: 600;
+      color: rgba(0, 0, 0, 0.88);
+    }
+
+    .sidebar-logo .logo-mark {
+      width: 28px;
+      height: 28px;
+      background: linear-gradient(135deg, #5b5ce2, #4f46e5);
+      border-radius: 6px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: #ffffff;
+      font-weight: 700;
+      font-size: 14px;
+    }
+
+    .sidebar-toggle {
+      margin-left: auto;
+      cursor: pointer;
+      color: rgba(0, 0, 0, 0.45);
+      width: 24px;
+      height: 24px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 4px;
+      transition: background 0.2s;
+    }
+
+    .sidebar-toggle:hover {
+      background: rgba(0, 0, 0, 0.04);
+      color: rgba(0, 0, 0, 0.88);
+    }
+
+    .sidebar-menu {
+      flex: 1;
+      overflow-y: auto;
+      padding: 8px 0;
+    }
+
+    .menu-group {
+      padding: 12px 20px 6px;
+      font-size: 12px;
+      color: rgba(0, 0, 0, 0.45);
+      font-weight: 500;
+    }
+
+    .menu-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 20px 8px 28px;
+      cursor: pointer;
+      font-size: 14px;
+      color: rgba(0, 0, 0, 0.65);
+      transition: all 0.18s;
+      border-left: 2px solid transparent;
+    }
+
+    .menu-item:hover {
+      color: #5b5ce2;
+      background: #f5f7ff;
+    }
+
+    .menu-item.active {
+      color: #5b5ce2;
+      background: #eef2ff;
+      border-left-color: #5b5ce2;
+      font-weight: 500;
+    }
+
+    .menu-item .menu-icon {
+      width: 16px;
+      height: 16px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: rgba(0, 0, 0, 0.45);
+    }
+
+    .menu-item.active .menu-icon {
+      color: #5b5ce2;
+    }
+
+    /* ====== 主区域 ====== */
+    .main {
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      background: #f5f7fa;
+    }
+
+    /* ====== 顶部导航 ====== */
+    header.topbar {
+      background: rgba(255, 255, 255, 0.94);
+      backdrop-filter: blur(6px);
+      border-bottom: 1px solid #f0f0f0;
+      padding: 14px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .topbar-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: rgba(0, 0, 0, 0.88);
+    }
+
+    .topbar-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .btn-save-global {
+      height: 32px;
+      padding: 0 16px;
+      border-radius: 8px;
+      border: none;
+      background: #2563eb;
+      color: #ffffff;
+      font-size: 14px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: background 0.2s;
+    }
+
+    .btn-save-global:hover {
+      background: #1d4ed8;
+    }
+
+    /* ====== Tab 栏 ====== */
+    .tabs-bar {
+      background: #ffffff;
+      border-bottom: 1px solid #f0f0f0;
+      padding: 0 24px;
+      overflow-x: auto;
+      white-space: nowrap;
+    }
+
+    .tabs-bar::-webkit-scrollbar {
+      display: none;
+    }
+
+    .tabs-list {
+      display: flex;
+      gap: 4px;
+    }
+
+    .tab-item {
+      padding: 12px 14px;
+      cursor: pointer;
+      font-size: 14px;
+      color: rgba(0, 0, 0, 0.65);
+      border-bottom: 2px solid transparent;
+      transition: all 0.18s;
+      position: relative;
+    }
+
+    .tab-item:hover {
+      color: #5b5ce2;
+    }
+
+    .tab-item.active {
+      color: #2563eb;
+      border-bottom-color: #2563eb;
+      font-weight: 500;
+    }
+
+    /* ====== 内容 ====== */
+    .content {
+      padding: 24px;
+      flex: 1;
+      overflow-y: auto;
+    }
+
+    /* ====== 卡片 ====== */
+    .card {
+      background: #ffffff;
+      border: 1px solid #f0f0f0;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+    }
+
+    .card-head {
+      padding: 16px 24px;
+      border-bottom: 1px solid #f5f5f5;
+    }
+
+    .card-title {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .card-title-main {
+      font-size: 16px;
+      font-weight: 600;
+      color: rgba(0, 0, 0, 0.88);
+    }
+
+    .card-title-sub {
+      font-size: 13px;
+      font-weight: 400;
+      color: rgba(0, 0, 0, 0.45);
+    }
+
+    .card-body {
+      padding: 20px 24px;
+    }
+
+    /* ====== 店铺表格工具栏 ====== */
+    .table-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .toolbar-tags {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .toolbar-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 0 8px;
+      height: 22px;
+      border-radius: 6px;
+      font-size: 12px;
+      line-height: 20px;
+    }
+
+    .tag-blue {
+      background: #e6f4ff;
+      color: #0958d9;
+      border: 1px solid #91caff;
+    }
+
+    .tag-default {
+      background: #fafafa;
+      color: rgba(0, 0, 0, 0.88);
+      border: 1px solid #d9d9d9;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      height: 32px;
+      padding: 0 14px;
+      border-radius: 8px;
+      font-size: 14px;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: all 0.18s;
+      background: transparent;
+      font-family: inherit;
+    }
+
+    .btn-primary {
+      background: #2563eb;
+      color: #ffffff;
+      border-color: transparent;
+    }
+
+    .btn-primary:hover {
+      background: #1d4ed8;
+    }
+
+    .btn-default {
+      background: #ffffff;
+      color: rgba(0, 0, 0, 0.88);
+      border-color: #d9d9d9;
+    }
+
+    .btn-default:hover {
+      border-color: #5b5ce2;
+      color: #5b5ce2;
+    }
+
+    /* ====== 表格 ====== */
+    .table {
+      width: 100%;
+      border-collapse: collapse;
+      border: 1px solid #f0f0f0;
+      border-radius: 6px;
+      overflow: hidden;
+      table-layout: fixed;
+    }
+
+    .table th, .table td {
+      padding: 12px 16px;
+      text-align: left;
+      font-size: 14px;
+      border-bottom: 1px solid #f0f0f0;
+    }
+
+    .table th {
+      background: #fafafa;
+      font-weight: 500;
+      color: rgba(0, 0, 0, 0.88);
+    }
+
+    .table tbody tr:hover {
+      background: #fafbff;
+    }
+
+    .table .empty {
+      padding: 60px 0;
+      text-align: center;
+      color: rgba(0, 0, 0, 0.25);
+    }
+
+    .table .empty-icon {
+      font-size: 48px;
+      color: rgba(0, 0, 0, 0.15);
+      margin-bottom: 8px;
+    }
+
+    .switch-control {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .switch-control .switch-dot {
+      width: 32px;
+      height: 18px;
+      border-radius: 9px;
+      background: #2563eb;
+      position: relative;
+      cursor: pointer;
+    }
+
+    .switch-control .switch-dot::after {
+      content: "";
+      position: absolute;
+      top: 2px;
+      right: 2px;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: #ffffff;
+      transition: all 0.2s;
+    }
+
+    .switch-control.off .switch-dot {
+      background: rgba(0, 0, 0, 0.25);
+    }
+
+    .switch-control.off .switch-dot::after {
+      right: auto;
+      left: 2px;
+    }
+
+    .switch-label {
+      font-size: 13px;
+      color: rgba(0, 0, 0, 0.65);
+    }
+
+    /* ====== 租户到期横幅 ====== */
+    .tenant-banner {
+      background: linear-gradient(135deg, #eef2ff, #f5f3ff);
+      border: 1px solid #c7d2fe;
+      border-radius: 8px;
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 16px;
+    }
+
+    .tenant-banner-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: #5b5ce2;
+      color: #ffffff;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .tenant-banner-content {
+      flex: 1;
+    }
+
+    .tenant-banner-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: rgba(0, 0, 0, 0.88);
+      margin-bottom: 4px;
+    }
+
+    .tenant-banner-desc {
+      font-size: 13px;
+      color: rgba(0, 0, 0, 0.65);
+    }
+
+    .tenant-banner-action {
+      color: #5b5ce2;
+      font-weight: 500;
+      font-size: 13px;
+      cursor: pointer;
+    }
+
+    .tenant-banner-action:hover {
+      text-decoration: underline;
+    }
+
+    /* ====== Modal ====== */
+    .modal-mask {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.45);
+      z-index: 1000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      animation: maskFade 0.2s ease-out;
+    }
+
+    .modal-mask.show {
+      display: flex;
+    }
+
+    @keyframes maskFade {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @keyframes modalSlide {
+      from { opacity: 0; transform: translateY(-12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .modal-content {
+      width: 640px;
+      max-width: calc(100vw - 48px);
+      max-height: calc(100vh - 80px);
+      background: #ffffff;
+      border-radius: 10px;
+      padding: 20px 24px;
+      box-shadow:
+        0 6px 16px rgba(0, 0, 0, 0.08),
+        0 3px 6px -4px rgba(0, 0, 0, 0.12),
+        0 9px 28px 8px rgba(0, 0, 0, 0.05);
+      animation: modalSlide 0.2s ease-out;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      width: 24px;
+      height: 24px;
+      cursor: pointer;
+      background: none;
+      border: none;
+      color: rgba(0, 0, 0, 0.45);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: color 0.2s;
+      padding: 0;
+    }
+
+    .modal-close:hover {
+      color: rgba(0, 0, 0, 0.88);
+    }
+
+    .modal-header {
+      margin-bottom: 16px;
+      padding-right: 24px;
+    }
+
+    .modal-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: rgba(0, 0, 0, 0.88);
+    }
+
+    .modal-body {
+      flex: 1;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+
+    .modal-footer {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      padding-top: 16px;
+      border-top: 1px solid #f0f0f0;
+      margin-top: 16px;
+    }
+
+    /* ====== 表单 ====== */
+    .form-item {
+      margin-bottom: 16px;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 14px;
+      color: rgba(0, 0, 0, 0.88);
+      margin-bottom: 6px;
+    }
+
+    .form-label .required {
+      color: #ef4444;
+      margin-right: 4px;
+    }
+
+    .form-control {
+      width: 100%;
+      height: 32px;
+      padding: 4px 11px;
+      border: 1px solid #d9d9d9;
+      border-radius: 6px;
+      font-size: 14px;
+      color: rgba(0, 0, 0, 0.88);
+      background: #ffffff;
+      transition: all 0.2s;
+      font-family: inherit;
+    }
+
+    .form-control:hover:not(:disabled) {
+      border-color: #5b5ce2;
+    }
+
+    .form-control:focus {
+      outline: none;
+      border-color: #5b5ce2;
+      box-shadow: 0 0 0 3px rgba(91, 92, 226, 0.10);
+    }
+
+    .form-control:disabled {
+      background: rgba(0, 0, 0, 0.04);
+      color: rgba(0, 0, 0, 0.45);
+      cursor: not-allowed;
+    }
+
+    .form-control.error {
+      border-color: #ef4444;
+    }
+
+    .form-control.error:focus {
+      box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.10);
+    }
+
+    .form-error {
+      font-size: 12px;
+      color: #ef4444;
+      margin-top: 4px;
+      min-height: 16px;
+    }
+
+    .input-affix {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .input-affix input {
+      flex: 1;
+      padding-right: 50px;
+    }
+
+    .input-show-count {
+      position: absolute;
+      right: 12px;
+      font-size: 12px;
+      color: rgba(0, 0, 0, 0.35);
+      pointer-events: none;
+    }
+
+    .select-control {
+      position: relative;
+      width: 100%;
+    }
+
+    .select-control .form-control {
+      cursor: pointer;
+      padding-right: 28px;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='64 64 896 896' fill='%23000'%3E%3Cpath d='M884 256h-75c-5.1 0-9.9 2.5-12.9 6.6L512 654.2 227.9 262.6c-3-4.1-7.8-6.6-12.9-6.6h-75c-6.5 0-10.3 7.4-6.5 12.7l352.6 486.1c12.8 17.6 39 17.6 51.7 0l352.6-486.1c3.9-5.3.1-12.7-6.4-12.7z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 8px center;
+      background-size: 14px 14px;
+    }
+
+    /* ====== OZON 接口子卡片 ====== */
+    .credentials-card {
+      border: 1px solid rgba(0, 0, 0, 0.08);
+      border-radius: 8px;
+      padding: 12px;
+      background: rgba(0, 0, 0, 0.02);
+      margin-bottom: 12px;
+    }
+
+    .credentials-card-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+
+    .credentials-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: rgba(0, 0, 0, 0.88);
+    }
+
+    .credentials-remove {
+      cursor: pointer;
+      color: rgba(0, 0, 0, 0.45);
+      font-size: 13px;
+      transition: color 0.2s;
+    }
+
+    .credentials-remove:hover {
+      color: #ef4444;
+    }
+
+    .add-credentials-btn {
+      width: 100%;
+      height: 38px;
+      border: 1px dashed #d9d9d9;
+      border-radius: 6px;
+      background: transparent;
+      color: rgba(0, 0, 0, 0.65);
+      font-size: 14px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.2s;
+      font-family: inherit;
+    }
+
+    .add-credentials-btn:hover {
+      border-color: #5b5ce2;
+      color: #5b5ce2;
+      background: #f5f7ff;
+    }
+
+    .form-tip-text {
+      font-size: 12px;
+      color: rgba(0, 0, 0, 0.45);
+      line-height: 1.6;
+      margin-top: 8px;
+    }
+
+    /* ====== 启用开关 ====== */
+    .enable-row {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid #f0f0f0;
+    }
+
+    .enable-row-title {
+      font-size: 14px;
+      color: rgba(0, 0, 0, 0.88);
+      margin-right: 12px;
+    }
+
+    .enable-options {
+      display: flex;
+      gap: 20px;
+    }
+
+    .enable-option {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      color: rgba(0, 0, 0, 0.88);
+    }
+
+    .enable-option input[type="radio"] {
+      accent-color: #2563eb;
+      cursor: pointer;
+    }
+
+    /* ====== 反馈消息 ====== */
+    .feedback {
+      position: fixed;
+      top: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 2000;
+      animation: toastIn 0.25s ease-out;
+    }
+
+    @keyframes toastIn {
+      from { opacity: 0; transform: translate(-50%, -8px); }
+      to { opacity: 1; transform: translate(-50%, 0); }
+    }
+
+    .toast {
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+    }
+
+    .toast-success {
+      background: #ecfdf5;
+      color: #047857;
+      border: 1px solid #a7f3d0;
+    }
+
+    .toast-error {
+      background: #fef2f2;
+      color: #b91c1c;
+      border: 1px solid #fecaca;
+    }
+
+    .toast-info {
+      background: #eff6ff;
+      color: #1d4ed8;
+      border: 1px solid #bfdbfe;
+    }
+
+    /* ====== 响应式 ====== */
+    @media (max-width: 900px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+      aside.sidebar {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <!-- ====== 侧边栏 ====== -->
+    <aside class="sidebar">
+      <div class="sidebar-logo">
+        <span class="logo-mark">Y</span>
+        <span>创也·乾坤</span>
+        <span class="sidebar-toggle" title="折叠菜单">
+          <svg class="icon" viewBox="0 0 1024 1024" width="16" height="16" fill="currentColor" aria-hidden="true">
+            <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-436H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM142.4 642L88 696l-54.4-54.4 54.4-54.4zM142.4 642z"></path>
+          </svg>
+        </span>
+      </div>
+
+      <nav class="sidebar-menu">
+        <div class="menu-group">运营工作台</div>
+        <div class="menu-item">
+          <span class="menu-icon">
+            <svg viewBox="64 64 896 896" width="14" height="14" fill="currentColor" aria-hidden="true">
+              <path d="M320 384v448c0 17.7 14.3 32 32 32s32-14.3 32-32V384c0-17.7-14.3-32-32-32s-32 14.3-32 32zm192 192v256c0 17.7 14.3 32 32 32s32-14.3 32-32V576c0-17.7-14.3-32-32-32s-32 14.3-32 32zm192-128v384c0 17.7 14.3 32 32 32s32-14.3 32-32V448c0-17.7-14.3-32-32-32s-32 14.3-32 32z"></path>
+            </svg>
+          </span>
+          经营战报
+        </div>
+        <div class="menu-item">
+          <span class="menu-icon">
+            <svg viewBox="64 64 896 896" width="14" height="14" fill="currentColor" aria-hidden="true">
+              <path d="M320 384v448c0 17.7 14.3 32 32 32s32-14.3 32-32V384c0-17.7-14.3-32-32-32s-32 14.3-32 32z"></path>
+            </svg>
+          </span>
+          单品作战台
+        </div>
+        <div class="menu-item">
+          <span class="menu-icon">
+            <svg viewBox="64 64 896 896" width="14" height="14" fill="currentColor" aria-hidden="true">
+              <path d="M880 256H144c-17.7 0-32 14.3-32 32v448c0 17.7 14.3 32 32 32h736c17.7 0 32-14.3 32-32V288c0-17.7-14.3-32-32-32z"></path>
+            </svg>
+          </span>
+          实时日报
+        </div>
+        <div class="menu-item">
+          <span class="menu-icon">
+            <svg viewBox="64 64 896 896" width="14" height="14" fill="currentColor" aria-hidden="true">
+              <path d="M832 64H192c-17.7 0-32 14.3-32 32v832c0 17.7 14.3 32 32 32h640c17.7 0 32-14.3 32-32V96c0-17.7-14.3-32-32-32z"></path>
+            </svg>
+          </span>
+          店铺作战台
+        </div>
+
+        <div class="menu-group">商品资料中心</div>
+        <div class="menu-item">
+          <span class="menu-icon">📦</span>
+          SKU 素材库
+        </div>
+        <div class="menu-item">
+          <span class="menu-icon">💰</span>
+          SKU 价格库存
+        </div>
+        <div class="menu-item">
+          <span class="menu-icon">📚</span>
+          类目知识库
+        </div>
+        <div class="menu-item">
+          <span class="menu-icon">🤖</span>
+          AI策略库
+        </div>
+        <div class="menu-item">
+          <span class="menu-icon">📊</span>
+          本品SKU数据&AI分析
+        </div>
+        <div class="menu-item">
+          <span class="menu-icon">🔍</span>
+          竞品市场数据&AI分析
+        </div>
+
+        <div class="menu-group">财务中心</div>
+        <div class="menu-item">
+          <span class="menu-icon">📈</span>
+          OZON 实时利润
+        </div>
+        <div class="menu-item">
+          <span class="menu-icon">📈</span>
+          WB 实时利润
+        </div>
+        <div class="menu-item">
+          <span class="menu-icon">📄</span>
+          月度总经营财务报告
+        </div>
+        <div class="menu-item">
+          <span class="menu-icon">📋</span>
+          OZON月度财务生成器
+        </div>
+        <div class="menu-item">
+          <span class="menu-icon">📋</span>
+          WB月度财务生成器
+        </div>
+        <div class="menu-item">
+          <span class="menu-icon">🔗</span>
+          SKU 映射管理
+        </div>
+
+        <div class="menu-group active">
+          <div class="menu-item active" style="padding-left:20px;">
+            <span class="menu-icon">
+              <svg viewBox="64 64 896 896" width="14" height="14" fill="currentColor" aria-hidden="true">
+                <path d="M512 512a192 192 0 1 0 0-384 192 192 0 0 0 0 384zm0 64c-223.6 0-416 152-416 352h832c0-200-192.4-352-416-352z"></path>
+              </svg>
+            </span>
+            超级管理员
+          </div>
+        </div>
+        <div class="menu-item active" style="background:#eef2ff;border-left-color:#5b5ce2;">
+          <span class="menu-icon">
+            <svg viewBox="64 64 896 896" width="14" height="14" fill="currentColor" aria-hidden="true">
+              <path d="M600.1 242c-64.7-7.5-127.7 13.8-176 60.3l-272 272c-62.5 62.5-62.5 163.8 0 226.3s163.8 62.5 226.3 0l272-272c46.5-48.3 67.8-111.3 60.3-176z"></path>
+            </svg>
+          </span>
+          全局设置
+        </div>
+      </nav>
+    </aside>
+
+    <!-- ====== 主区域 ====== -->
+    <div class="main">
+      <header class="topbar">
+        <h1 class="topbar-title">全局设置</h1>
+        <div class="topbar-actions">
+          <button class="btn-save-global" id="saveGlobalBtn">
+            <svg viewBox="64 64 896 896" width="14" height="14" fill="currentColor" aria-hidden="true">
+              <path d="M893.3 293.3L730.7 130.7c-7.5-7.5-16.7-13-26.7-16V112H144c-17.7 0-32 14.3-32 32v736c0 17.7 14.3 32 32 32h736c17.7 0 32-14.3 32-32V320c0-9.9-3-19.3-8-26.7zM384 184h256v104H384V184zm456 656H184V184h136v136c0 17.7 14.3 32 32 32h320c17.7 0 32-14.3 32-32V205.8L824 380.2V840z"></path>
+            </svg>
+            保存全局设置
+          </button>
+        </div>
+      </header>
+
+      <!-- Tab 栏 -->
+      <div class="tabs-bar">
+        <div class="tabs-list">
+          <div class="tab-item" data-tab="ai-service">AI 服务</div>
+          <div class="tab-item" data-tab="image">图片生成</div>
+          <div class="tab-item" data-tab="video">视频生成</div>
+          <div class="tab-item active" data-tab="store">店铺设置</div>
+          <div class="tab-item" data-tab="platform">平台设置</div>
+          <div class="tab-item" data-tab="rate">财务汇率</div>
+          <div class="tab-item" data-tab="profit">实时利润同步</div>
+          <div class="tab-item" data-tab="advanced">高级配置</div>
+          <div class="tab-item" data-tab="collect">平台数据采集</div>
+          <div class="tab-item" data-tab="ozon-rate">OZON跨境汇率</div>
+          <div class="tab-item" data-tab="user">用户与权限</div>
+          <div class="tab-item" data-tab="apply">开通申请</div>
+        </div>
+      </div>
+
+      <div class="content">
+        <!-- 店铺设置卡片 -->
+        <div class="card" id="storeCard">
+          <div class="card-head">
+            <div class="card-title">
+              <span class="card-title-main">店铺设置</span>
+              <span class="card-title-sub">财务、SKU 映射和后续平台 API 都会读取这里的店铺。</span>
+            </div>
+          </div>
+          <div class="card-body">
+            <!-- 租户到期横幅 -->
+            <div class="tenant-banner" id="tenantBanner">
+              <div class="tenant-banner-icon">
+                <svg viewBox="64 64 896 896" width="20" height="20" fill="currentColor" aria-hidden="true">
+                  <path d="M512 64C264.6 64 64 264.6 64 512s200.6 448 448 448 448-200.6 448-448S759.4 64 512 64zm193.5 325.7l-210.6 292a31.8 31.8 0 0 1-48.3 0L318.5 484.9c-3.8-5.3 0-12.7 6.5-12.7h46.9c10.2 0 19.9 4.9 25.9 13.3l71.2 98.8 157.2-218c6-8.3 15.6-13.3 25.9-13.3H699c6.5 0 10.3 7.4 6.5 12.7z"></path>
+                </svg>
+              </div>
+              <div class="tenant-banner-content">
+                <div class="tenant-banner-title">当前租户：永久有效</div>
+                <div class="tenant-banner-desc">
+                  平台租户到期时间：<strong id="expiryDateText">永久</strong>　·　剩余 <strong id="expiryDaysText">—</strong> 天
+                </div>
+              </div>
+              <a class="tenant-banner-action" href="/subscribe.html" id="goSubscribe" target="_blank" rel="noopener">续期租户 / 升级 →</a>
+            </div>
+
+            <!-- 工具栏 -->
+            <div class="table-toolbar">
+              <div class="toolbar-tags">
+                <span class="tag tag-blue">已启用 0 / 授权 1 个店铺</span>
+                <span class="tag tag-default">平台租户到期：永久</span>
+              </div>
+              <div class="toolbar-actions">
+                <button class="btn btn-primary" id="addStoreBtn">
+                  <svg viewBox="64 64 896 896" width="14" height="14" fill="currentColor" aria-hidden="true">
+                    <path d="M482 152h60q8 0 8 8v704q0 8-8 8h-60q-8 0-8-8V160q0-8 8-8z"></path>
+                    <path d="M192 474h672q8 0 8 8v60q0 8-8 8H160q-8 0-8-8v-60q0-8 8-8z"></path>
+                  </svg>
+                  新增店铺
+                </button>
+                <button class="btn btn-default">
+                  <svg viewBox="64 64 896 896" width="14" height="14" fill="currentColor" aria-hidden="true">
+                    <path d="M574 665.4a8.03 8.03 0 00-11.3 0L446.5 781.6c-53.8 53.8-144.6 59.5-204 0-59.5-59.5-53.8-150.2 0-204l116.2-116.2c3.1-3.1 3.1-8.2 0-11.3l-39.8-39.8a8.03 8.03 0 00-11.3 0L191.4 526.5c-84.6-84.6-84.6-221.5 0-306s221.5-84.6 306 0l116.2 116.2c3.1 3.1 3.1 8.2 0 11.3L574 665.4z"></path>
+                  </svg>
+                  新手指引
+                </button>
+              </div>
+            </div>
+
+            <!-- 表格 -->
+            <table class="table">
+              <colgroup>
+                <col style="width:220px">
+                <col style="width:190px">
+                <col style="width:140px">
+                <col style="width:auto">
+                <col style="width:90px">
+                <col style="width:150px">
+              </colgroup>
+              <thead>
+                <tr>
+                  <th>店铺名称</th>
+                  <th>平台+店铺类型</th>
+                  <th>本系统币种</th>
+                  <th>平台接口</th>
+                  <th>启用</th>
+                  <th>操作</th>
+                </tr>
+              </thead>
+              <tbody id="storeTbody">
+                <tr>
+                  <td colspan="6" class="empty">
+                    <div class="empty-icon">
+                      <svg viewBox="64 64 896 896" width="48" height="48" fill="currentColor" aria-hidden="true">
+                        <path d="M832 64H192c-17.7 0-32 14.3-32 32v832c0 17.7 14.3 32 32 32h640c17.7 0 32-14.3 32-32V96c0-17.7-14.3-32-32-32zm-40 64v128H232V128h560zm0 768H232V320h560v576zM304 384h416v48H304zm0 96h416v48H304zm0 96h256v48H304z"></path>
+                      </svg>
+                    </div>
+                    <div>暂无数据</div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====== 新增店铺弹窗 ====== -->
+  <div class="modal-mask" id="addStoreModal">
+    <div class="modal-content">
+      <button type="button" class="modal-close" id="modalClose" aria-label="关闭">
+        <svg viewBox="64 64 896 896" width="14" height="14" fill="currentColor" aria-hidden="true">
+          <path d="M563.8 512l262.5-312.9c4.4-5.2.7-13.1-6.1-13.1h-79.8c-4.7 0-9.2 2.1-12.3 5.7L488 480.6 344.2 191.7c-3-3.6-7.5-5.7-12.3-5.7H252c-6.8 0-10.5 7.9-6.1 13.1L460.4 512 197.9 824.9c-4.4 5.2-.7 13.1 6.1 13.1h79.8c4.7 0 9.2-2.1 12.3-5.7L488 543.4l143.8 169.1c3 3.6 7.5 5.7 12.3 5.7h79.8c6.8 0 10.5-7.9 6.1-13.1L563.8 512z"></path>
+        </svg>
+      </button>
+      <div class="modal-header">
+        <div class="modal-title">新增店铺</div>
+      </div>
+      <form id="addStoreForm" class="modal-body" autocomplete="off" novalidate>
+        <!-- 店铺名称 -->
+        <div class="form-item">
+          <label class="form-label" for="storeName">
+            <span class="required">*</span>店铺名称
+          </label>
+          <div class="input-affix">
+            <input
+              type="text"
+              id="storeName"
+              class="form-control"
+              placeholder="例如：1店铺"
+              maxlength="200"
+              required
+            />
+            <span class="input-show-count" id="storeNameCount">0 / 200</span>
+          </div>
+          <div class="form-error" id="tip-storeName"></div>
+        </div>
+
+        <!-- 平台+店铺类型 -->
+        <div class="form-item">
+          <label class="form-label" for="platformType">
+            <span class="required">*</span>平台+店铺类型
+          </label>
+          <div class="select-control">
+            <select id="platformType" class="form-control" required>
+              <option value="ozon-local">OZON/本土店铺</option>
+              <option value="ozon-cross">OZON/跨境店铺</option>
+              <option value="wb-local">Wildberries/本土店铺</option>
+              <option value="wb-cross">Wildberries/跨境店铺</option>
+            </select>
+          </div>
+          <div class="form-error" id="tip-platformType"></div>
+        </div>
+
+        <!-- 本系统币种 -->
+        <div class="form-item">
+          <label class="form-label">本系统币种</label>
+          <input type="text" class="form-control" value="RUB" disabled />
+        </div>
+
+        <!-- OZON 平台接口 -->
+        <div id="credentialsContainer">
+          <!-- 动态插入 credentials card -->
+        </div>
+
+        <button type="button" class="add-credentials-btn" id="addCredentialsBtn">
+          <svg viewBox="64 64 896 896" width="14" height="14" fill="currentColor" aria-hidden="true">
+            <path d="M482 152h60q8 0 8 8v704q0 8-8 8h-60q-8 0-8-8V160q0-8 8-8z"></path>
+            <path d="M192 474h672q8 0 8 8v60q0 8-8 8H160q-8 0-8-8v-60q0-8 8-8z"></path>
+          </svg>
+          添加 OZON 平台接口
+        </button>
+
+        <p class="form-tip-text">同一 OZON 店铺可绑定多套 Client ID / API Key，每套接口将拆分为独立店铺行保存。</p>
+
+        <!-- 启用 -->
+        <div class="enable-row">
+          <span class="enable-row-title">启用</span>
+          <div class="enable-options">
+            <label class="enable-option">
+              <input type="radio" name="enabled" value="on" checked />
+              <span>开启</span>
+            </label>
+            <label class="enable-option">
+              <input type="radio" name="enabled" value="off" />
+              <span>关闭</span>
+            </label>
+          </div>
+        </div>
+      </form>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" id="modalCancel">取 消</button>
+        <button type="button" class="btn btn-primary" id="modalSave">保 存</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="feedbackContainer"></div>
+
+  <script>
+    (function () {
+      'use strict';
+
+      const $ = (sel) => document.querySelector(sel);
+
+      // ====== 租户到期信息 ======
+      // 模拟一个真实的租户到期状态：当前是 2026-09-03
+      const tenantInfo = {
+        plan: '旗舰版',
+        purchaseDate: '2026-09-03',
+        // 永久 = 没有 expiryDate
+        expiryDate: null,
+        daysRemaining: Infinity,
+      };
+
+      function renderTenantInfo() {
+        const expiryTextEl = $('#expiryDateText');
+        const daysEl = $('#expiryDaysText');
+        if (tenantInfo.expiryDate) {
+          expiryTextEl.textContent = tenantInfo.expiryDate;
+          daysEl.textContent = tenantInfo.daysRemaining;
+        } else {
+          expiryTextEl.textContent = '永久';
+          daysEl.textContent = '永久';
+        }
+      }
+
+      // ====== 反馈提示 ======
+      function showToast(type, message) {
+        const container = $('#feedbackContainer');
+        const el = document.createElement('div');
+        el.className = 'feedback';
+        el.innerHTML = `<div class="toast toast-${type}">${message}</div>`;
+        container.appendChild(el);
+        setTimeout(() => {
+          el.style.opacity = '0';
+          el.style.transition = 'opacity 0.3s';
+          setTimeout(() => el.remove(), 300);
+        }, 2500);
+      }
+
+      // ====== Tab 切换 ======
+      function bindTabs() {
+        const tabs = document.querySelectorAll('.tab-item');
+        tabs.forEach((tab) => {
+          tab.addEventListener('click', () => {
+            tabs.forEach((t) => t.classList.remove('active'));
+            tab.classList.add('active');
+            const key = tab.dataset.tab;
+            if (key !== 'store') {
+              showToast('info', `已切换到「${tab.innerText.trim()}」 tab（本演示仅展示店铺设置）`);
+            }
+          });
+        });
+      }
+
+      // ====== 店铺名称计数 ======
+      function bindStoreNameCounter() {
+        const input = $('#storeName');
+        const counter = $('#storeNameCount');
+        const max = input.maxLength || 200;
+        const update = () => {
+          counter.textContent = `${input.value.length} / ${max}`;
+        };
+        input.addEventListener('input', update);
+        update();
+      }
+
+      // ====== 凭据子卡片 ======
+      const credentialsContainer = $('#credentialsContainer');
+      let credentialSeq = 1;
+
+      function createCredentialsCard(index) {
+        const card = document.createElement('div');
+        card.className = 'credentials-card';
+        card.dataset.index = index;
+        card.innerHTML = `
+          <div class="credentials-card-head">
+            <span class="credentials-title">OZON 平台接口 #${index}</span>
+            <span class="credentials-remove" data-action="remove">删除</span>
+          </div>
+          <div class="form-item" style="margin-bottom:8px;">
+            <label class="form-label">
+              <span class="required">*</span>Client ID
+            </label>
+            <input type="text" class="form-control credentials-client" placeholder="OZON Client ID" />
+            <div class="form-error"></div>
+          </div>
+          <div class="form-item" style="margin-bottom:0;">
+            <label class="form-label">
+              <span class="required">*</span>API Key
+            </label>
+            <div class="input-affix">
+              <input type="password" class="form-control credentials-key" placeholder="OZON API Key" />
+              <span class="credentials-toggle-eye" style="position:absolute;right:12px;cursor:pointer;color:rgba(0,0,0,0.45);">
+                <svg viewBox="64 64 896 896" width="14" height="14" fill="currentColor" aria-hidden="true">
+                  <path d="M942.2 486.2Q829.1 314 696.4 314.5t-245.8 171.7q-7.7 12.3-7.7 25.7t7.7 25.7Q563.4 710 696.4 710t245.8-171.7q7.7-12.3 7.7-25.7t-7.7-25.7zM696.4 618.3q-66.3 0-113.2-46.8T536.4 458.5q0-66.3 46.8-113.2t113.2-46.8 113.2 46.8 46.8 113.2q0 66.3-46.8 113.2t-113.2 46.8z"></path>
+                </svg>
+              </span>
+            </div>
+            <div class="form-error"></div>
+          </div>
+        `;
+        // 删除
+        card.querySelector('[data-action="remove"]').addEventListener('click', () => {
+          if (credentialsContainer.children.length > 1) {
+            card.remove();
+          } else {
+            showToast('info', '至少保留一个接口配置');
+          }
+        });
+        // 显示/隐藏 API Key
+        const eye = card.querySelector('.credentials-toggle-eye');
+        const keyInput = card.querySelector('.credentials-key');
+        eye.addEventListener('click', () => {
+          keyInput.type = keyInput.type === 'password' ? 'text' : 'password';
+        });
+        return card;
+      }
+
+      function initCredentials() {
+        credentialsContainer.innerHTML = '';
+        credentialsContainer.appendChild(createCredentialsCard(1));
+      }
+
+      $('#addCredentialsBtn').addEventListener('click', () => {
+        credentialSeq++;
+        credentialsContainer.appendChild(createCredentialsCard(credentialSeq));
+      });
+
+      // ====== Modal ======
+      const modal = $('#addStoreModal');
+      function openModal() {
+        modal.classList.add('show');
+        resetForm();
+      }
+      function closeModal() {
+        modal.classList.remove('show');
+      }
+
+      function resetForm() {
+        $('#addStoreForm').reset();
+        $('#storeNameCount').textContent = '0 / 200';
+        $('#storeName').classList.remove('error');
+        $('#tip-storeName').textContent = '';
+        $('#tip-platformType').textContent = '';
+        $('#platformType').classList.remove('error');
+        credentialSeq = 1;
+        initCredentials();
+      }
+
+      $('#addStoreBtn').addEventListener('click', openModal);
+      $('#modalClose').addEventListener('click', closeModal);
+      $('#modalCancel').addEventListener('click', closeModal);
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) closeModal();
+      });
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && modal.classList.contains('show')) closeModal();
+      });
+
+      // ====== 表单校验与保存 ======
+      function validateStoreForm() {
+        let valid = true;
+        const name = $('#storeName').value.trim();
+        if (!name) {
+          $('#storeName').classList.add('error');
+          $('#tip-storeName').textContent = '请输入店铺名称';
+          valid = false;
+        } else {
+          $('#storeName').classList.remove('error');
+          $('#tip-storeName').textContent = '';
+        }
+        const platform = $('#platformType').value;
+        if (!platform) {
+          $('#platformType').classList.add('error');
+          $('#tip-platformType').textContent = '请选择平台+店铺类型';
+          valid = false;
+        } else {
+          $('#platformType').classList.remove('error');
+          $('#tip-platformType').textContent = '';
+        }
+        // 凭据校验
+        const cards = credentialsContainer.querySelectorAll('.credentials-card');
+        cards.forEach((card) => {
+          const clientId = card.querySelector('.credentials-client').value.trim();
+          const apiKey = card.querySelector('.credentials-key').value.trim();
+          const clientInput = card.querySelector('.credentials-client');
+          const keyInput = card.querySelector('.credentials-key');
+          const clientErr = card.querySelectorAll('.form-error')[0];
+          const keyErr = card.querySelectorAll('.form-error')[1];
+          if (!clientId) {
+            clientInput.classList.add('error');
+            clientErr.textContent = '请输入 Client ID';
+            valid = false;
+          } else {
+            clientInput.classList.remove('error');
+            clientErr.textContent = '';
+          }
+          if (!apiKey) {
+            keyInput.classList.add('error');
+            keyErr.textContent = '请输入 API Key';
+            valid = false;
+          } else {
+            keyInput.classList.remove('error');
+            keyErr.textContent = '';
+          }
+        });
+        return valid;
+      }
+
+      $('#modalSave').addEventListener('click', () => {
+        if (!validateStoreForm()) {
+          showToast('error', '请检查并完善表单内容');
+          return;
+        }
+        const name = $('#storeName').value.trim();
+        const platformText = $('#platformType').options[$('#platformType').selectedIndex].text;
+        const enabled = document.querySelector('input[name="enabled"]:checked').value === 'on';
+        // 每套接口拆分为独立店铺行
+        const cards = credentialsContainer.querySelectorAll('.credentials-card');
+        cards.forEach((card, idx) => {
+          const clientId = card.querySelector('.credentials-client').value.trim();
+          const apiText = cards.length === 1
+            ? '1 套接口'
+            : `${idx + 1} / ${cards.length}（Client ID：${maskStr(clientId)}）`;
+          appendStoreRow(name, platformText, 'RUB', apiText, enabled);
+        });
+        closeModal();
+        showToast('success', `店铺「${name}」添加成功，共 ${cards.length} 套接口`);
+        updateEnabledTag();
+      });
+
+      function maskStr(s) {
+        if (!s) return '';
+        if (s.length <= 8) return s;
+        return s.substring(0, 4) + '****' + s.substring(s.length - 4);
+      }
+
+      function appendStoreRow(name, platform, currency, apis, enabled) {
+        const tbody = $('#storeTbody');
+        // 如果是空状态，先清掉（td.empty 所在的 tr）
+        const emptyTd = tbody.querySelector('td.empty');
+        if (emptyTd) {
+          const emptyRow = emptyTd.closest('tr');
+          if (emptyRow) emptyRow.remove();
+        }
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${name}</td>
+          <td>${platform}</td>
+          <td>${currency}</td>
+          <td>${apis}</td>
+          <td>
+            <div class="switch-control ${enabled ? '' : 'off'}">
+              <span class="switch-dot"></span>
+              <span class="switch-label">${enabled ? '已启用' : '已停用'}</span>
+            </div>
+          </td>
+          <td>
+            <a href="#" style="color:#5b5ce2;text-decoration:none;margin-right:12px;" onclick="event.preventDefault();">编辑</a>
+            <a href="#" style="color:#ef4444;text-decoration:none;" onclick="event.preventDefault();">删除</a>
+          </td>
+        `;
+        // 切换启用
+        const sw = row.querySelector('.switch-control');
+        sw.querySelector('.switch-dot').addEventListener('click', () => {
+          const off = sw.classList.toggle('off');
+          sw.querySelector('.switch-label').textContent = off ? '已停用' : '已启用';
+          updateEnabledTag();
+        });
+        tbody.appendChild(row);
+      }
+
+      function updateEnabledTag() {
+        const rows = document.querySelectorAll('#storeTbody tr');
+        const validRows = Array.from(rows).filter(r => !r.querySelector('.empty'));
+        const enabled = validRows.filter(r => {
+          const sw = r.querySelector('.switch-control');
+          return sw && !sw.classList.contains('off');
+        }).length;
+        const tag = document.querySelector('.tag-blue');
+        if (tag) tag.textContent = `已启用 ${enabled} / 授权 ${validRows.length} 个店铺`;
+      }
+
+      // ====== 顶部"保存全局设置" ======
+      $('#saveGlobalBtn').addEventListener('click', () => {
+        showToast('success', '全局设置已保存');
+      });
+
+      // ====== 初始化 ======
+      renderTenantInfo();
+      bindTabs();
+      bindStoreNameCounter();
+      initCredentials();
+    })();
+  </script>
+</body>
+</html>
