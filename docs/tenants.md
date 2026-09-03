@@ -3,7 +3,7 @@
 > **文档版本**: v1.0 · 2026-09-03
 > **作者**: 平台产品组 + 增长产品组
 > **文档状态**: 评审中
-> **关联 HTML 原型**: `tenants.html`
+> **关联 HTML 原型**: [tenants.html](tenants.html)
 > **关联后端服务**: `tenant-service` / `partner-service`
 > **关联业务**: 创也·乾坤 —— 渠道商归因 + 租户管理后台
 
@@ -284,9 +284,9 @@
   - [ ] CSV 导出事件
 - [ ] **设计走查**：UI 同事 review 通过
 - [ ] **对接回归**：
-  - [ ] 与 `register.html` 的来源渠道字段对齐
-  - [ ] 与 `partner-dashboard.html` 的渠道商统计对齐
-  - [ ] 与 `settings.html` 的店铺列表对齐
+  - [ ] 与 [register.html](register.html) 的来源渠道字段对齐
+  - [ ] 与 [partner-dashboard.html](partner-dashboard.html) 的渠道商统计对齐
+  - [ ] 与 [settings.html](settings.html) 的店铺列表对齐
 
 ---
 

@@ -3,7 +3,7 @@
 > **文档版本**: v1.0 · 2026-09-03
 > **作者**: 平台产品组
 > **文档状态**: 评审中
-> **关联 HTML 原型**: `settings.html`
+> **关联 HTML 原型**: [settings.html](settings.html)
 > **关联后端服务**: `tenant-service` / `platform-config-service` / `ai-service`
 > **关联业务**: 创也·乾坤 —— 已开通租户的后台配置中心
 
@@ -295,8 +295,8 @@
 - [ ] **数据埋点**：每个 tab 切换、每次保存、每次 AI 测试
 - [ ] **设计走查**：UI 同事 review 通过
 - [ ] **对接回归**：
-  - [ ] 与 `tenants.html` 的租户状态联动
-  - [ ] 与 `subscribe.html` 的「续期」链接正常
+  - [ ] 与 [tenants.html](tenants.html) 的租户状态联动
+  - [ ] 与 [subscribe.html](subscribe.html) 的「续期」链接正常
 
 ---
 

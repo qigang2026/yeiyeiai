@@ -401,6 +401,31 @@
 
     .md a:hover { border-bottom-style: solid; }
 
+    /* ====== 正文里的文件名内联链接（自动识别） ====== */
+    .md .doc-inline-link {
+      display: inline-flex;
+      align-items: baseline;
+      gap: 3px;
+      padding: 0 4px;
+      border-radius: 3px;
+      background: #f0f0ff;
+      border-bottom: none !important;
+      color: #5b5ce2;
+      font-family: ui-monospace, SFMono-Regular, "SF Mono", Consolas, monospace;
+      font-size: 0.92em;
+      transition: background 0.15s;
+    }
+    .md .doc-inline-link:hover {
+      background: #e6e6ff;
+      text-decoration: none;
+    }
+    .md .doc-inline-link::after {
+      content: "↗";
+      font-size: 0.7em;
+      opacity: 0.6;
+      font-family: -apple-system, sans-serif;
+    }
+
     /* ====== 内联徽章 ====== */
     .md .badge {
       display: inline-block;
@@ -617,15 +642,52 @@
           .replace(/'/g, '&#39;');
       }
 
+      // ====== 自动识别可点击的本地文件（HTML / MD） ======
+      // 在文档正文中，裸写的 filename.html / filename.md 自动变成可点击链接。
+      // 已经通过 [text](url) 形式写的 markdown 链接不会被二次处理。
+      // 反引号行内代码 `tenants.html` 也不会被识别。
+
       function renderInline(s) {
-        // 顺序：图片 → 链接 → 行内代码 → 加粗 → 斜体
+        // 顺序：图片 → 链接 → 行内代码 → 自动识别本地文件 → 加粗 → 斜体
+        // 注意：调用本函数前，s 已经经过 escapeHtml，所以 < > & 都是实体形式。
+
+        // 先把 markdown 链接 [text](url) 转成占位符（避免被自动链接命中）
+        const linkPh = [];
+        const LPH = '\x01L\x01';
+        s = s.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (m) => {
+          linkPh.push(m);
+          return `${LPH}${linkPh.length - 1}\x02`;
+        });
+
+        // 行内代码 `code` 转成占位符（避免代码块里的文件名被自动链接命中）
+        const codePh = [];
+        const CPH = '\x01C\x01';
+        s = s.replace(/`([^`]+)`/g, (m) => {
+          codePh.push(m);
+          return `${CPH}${codePh.length - 1}\x02`;
+        });
+
+        // 自动把 filename.html / filename.md 转为链接
+        s = s.replace(
+          /(?<![\w\/.\-])([a-zA-Z0-9_\-]+(?:\.[a-zA-Z0-9_\-]+)?\.(?:html|md))(?![\w/.\-])/g,
+          (m, filename) =>
+            `<a href="${filename}" target="_blank" rel="noopener" class="doc-inline-link" title="打开 ${filename}">${filename}</a>`
+        );
+
+        // 还原占位符
+        s = s.replace(new RegExp(`${LPH}(\\d+)\x02`, 'g'), (_, i) => {
+          const orig = linkPh[+i];
+          return orig.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
+        });
+        s = s.replace(new RegExp(`${CPH}(\\d+)\x02`, 'g'), (_, i) => {
+          const orig = codePh[+i];
+          return orig.replace(/`([^`]+)`/g, '<code>$1</code>');
+        });
+
+        // 其余内联格式
         return s
           // 图片 ![alt](src)
           .replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img alt="$1" src="$2" style="max-width:100%;">')
-          // 链接 [text](url)
-          .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>')
-          // 行内代码 `code`
-          .replace(/`([^`]+)`/g, '<code>$1</code>')
           // 加粗 **text**
           .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
           // 斜体 *text*

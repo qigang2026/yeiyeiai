@@ -3,7 +3,7 @@
 > **文档版本**: v1.0 · 2026-09-03
 > **作者**: 增长产品组
 > **文档状态**: 评审中
-> **关联 HTML 原型**: `register.html`
+> **关联 HTML 原型**: [register.html](register.html)
 > **关联后端服务**: `auth-service` / `tenant-service`
 > **关联业务**: 创也·乾坤（OZON/WB 跨境电商 SaaS）—— 终端租户入驻入口
 
