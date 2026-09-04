@@ -1104,7 +1104,7 @@
           <input type="text" class="form-control" value="RUB" disabled />
         </div>
 
-        <!-- OZON 平台接口 -->
+        <!-- 平台接口 -->
         <div id="credentialsContainer">
           <!-- 动态插入 credentials card -->
         </div>
@@ -1114,10 +1114,12 @@
             <path d="M482 152h60q8 0 8 8v704q0 8-8 8h-60q-8 0-8-8V160q0-8 8-8z"></path>
             <path d="M192 474h672q8 0 8 8v60q0 8-8 8H160q-8 0-8-8v-60q0-8 8-8z"></path>
           </svg>
-          添加 OZON 平台接口
+          <span id="addCredentialsBtnText">添加 OZON 平台接口</span>
         </button>
 
-        <p class="form-tip-text">同一 OZON 店铺可绑定多套 Client ID / API Key，每套接口将拆分为独立店铺行保存。</p>
+        <p class="form-tip-text" id="credentialsTip">
+          同一 OZON 店铺可绑定多套 Client ID / API Key，每套接口将拆分为独立店铺行保存。
+        </p>
 
         <!-- 启用 -->
         <div class="enable-row">
@@ -1216,20 +1218,23 @@
       const credentialsContainer = $('#credentialsContainer');
       let credentialSeq = 1;
 
-      function createCredentialsCard(index) {
+      function createCredentialsCard(index, opts) {
+        opts = opts || {};
+        const showDelete = opts.showDelete !== false; // 默认显示
+        const platform = opts.platform || 'OZON';
         const card = document.createElement('div');
         card.className = 'credentials-card';
         card.dataset.index = index;
         card.innerHTML = `
           <div class="credentials-card-head">
-            <span class="credentials-title">OZON 平台接口 #${index}</span>
-            <span class="credentials-remove" data-action="remove">删除</span>
+            <span class="credentials-title">${platform} 平台接口 #${index}</span>
+            ${showDelete ? '<span class="credentials-remove" data-action="remove">删除</span>' : ''}
           </div>
           <div class="form-item" style="margin-bottom:8px;">
             <label class="form-label">
               <span class="required">*</span>Client ID
             </label>
-            <input type="text" class="form-control credentials-client" placeholder="OZON Client ID" />
+            <input type="text" class="form-control credentials-client" placeholder="${platform} Client ID" />
             <div class="form-error"></div>
           </div>
           <div class="form-item" style="margin-bottom:0;">
@@ -1237,7 +1242,7 @@
               <span class="required">*</span>API Key
             </label>
             <div class="input-affix">
-              <input type="password" class="form-control credentials-key" placeholder="OZON API Key" />
+              <input type="password" class="form-control credentials-key" placeholder="${platform} API Key" />
               <span class="credentials-toggle-eye" style="position:absolute;right:12px;cursor:pointer;color:rgba(0,0,0,0.45);">
                 <svg viewBox="64 64 896 896" width="14" height="14" fill="currentColor" aria-hidden="true">
                   <path d="M942.2 486.2Q829.1 314 696.4 314.5t-245.8 171.7q-7.7 12.3-7.7 25.7t7.7 25.7Q563.4 710 696.4 710t245.8-171.7q7.7-12.3 7.7-25.7t-7.7-25.7zM696.4 618.3q-66.3 0-113.2-46.8T536.4 458.5q0-66.3 46.8-113.2t113.2-46.8 113.2 46.8 46.8 113.2q0 66.3-46.8 113.2t-113.2 46.8z"></path>
@@ -1247,14 +1252,16 @@
             <div class="form-error"></div>
           </div>
         `;
-        // 删除
-        card.querySelector('[data-action="remove"]').addEventListener('click', () => {
-          if (credentialsContainer.children.length > 1) {
-            card.remove();
-          } else {
-            showToast('info', '至少保留一个接口配置');
-          }
-        });
+        // 删除（仅在 showDelete 时绑定）
+        if (showDelete) {
+          card.querySelector('[data-action="remove"]').addEventListener('click', () => {
+            if (credentialsContainer.children.length > 1) {
+              card.remove();
+            } else {
+              showToast('info', '至少保留一个接口配置');
+            }
+          });
+        }
         // 显示/隐藏 API Key
         const eye = card.querySelector('.credentials-toggle-eye');
         const keyInput = card.querySelector('.credentials-key');
@@ -1264,14 +1271,59 @@
         return card;
       }
 
-      function initCredentials() {
+      // 当前接口模式：'multi' = OZON（多套接口），'single' = WB（仅 1 套接口）
+      let interfaceMode = 'multi';
+
+      function initCredentials(opts) {
+        opts = opts || {};
         credentialsContainer.innerHTML = '';
-        credentialsContainer.appendChild(createCredentialsCard(1));
+        credentialSeq = 1;
+        credentialsContainer.appendChild(
+          createCredentialsCard(1, {
+            showDelete: interfaceMode === 'multi',
+            platform: opts.platform || 'OZON',
+          })
+        );
       }
 
       $('#addCredentialsBtn').addEventListener('click', () => {
+        if (interfaceMode !== 'multi') {
+          showToast('info', '当前平台只支持 1 套接口配置');
+          return;
+        }
         credentialSeq++;
-        credentialsContainer.appendChild(createCredentialsCard(credentialSeq));
+        credentialsContainer.appendChild(
+          createCredentialsCard(credentialSeq, { showDelete: true, platform: currentPlatformName() })
+        );
+      });
+
+      function currentPlatformName() {
+        const v = $('#platformType').value;
+        return v && v.startsWith('wb') ? 'Wildberries' : 'OZON';
+      }
+
+      function applyInterfaceMode() {
+        const v = $('#platformType').value;
+        const isWb = v && v.startsWith('wb');
+        interfaceMode = isWb ? 'single' : 'multi';
+        const btn = $('#addCredentialsBtn');
+        const tip = $('#credentialsTip');
+        const btnText = $('#addCredentialsBtnText');
+        if (isWb) {
+          btn.style.display = 'none';
+          tip.textContent = 'Wildberries 店铺仅支持 1 套 Client ID / API Key 配置。';
+          btnText.textContent = '添加 Wildberries 平台接口';
+        } else {
+          btn.style.display = '';
+          tip.textContent = '同一 OZON 店铺可绑定多套 Client ID / API Key，每套接口将拆分为独立店铺行保存。';
+          btnText.textContent = '添加 OZON 平台接口';
+        }
+      }
+
+      $('#platformType').addEventListener('change', () => {
+        applyInterfaceMode();
+        // 切到 WB 时强制只留 1 套（直接重建）
+        initCredentials({ platform: currentPlatformName() });
       });
 
       // ====== Modal ======
@@ -1291,8 +1343,9 @@
         $('#tip-storeName').textContent = '';
         $('#tip-platformType').textContent = '';
         $('#platformType').classList.remove('error');
-        credentialSeq = 1;
-        initCredentials();
+        // reset 后 select 默认回到第一个（OZON/本土店铺），重新应用接口模式
+        applyInterfaceMode();
+        initCredentials({ platform: currentPlatformName() });
       }
 
       $('#addStoreBtn').addEventListener('click', openModal);
@@ -1438,7 +1491,8 @@
       renderTenantInfo();
       bindTabs();
       bindStoreNameCounter();
-      initCredentials();
+      applyInterfaceMode();
+      initCredentials({ platform: currentPlatformName() });
     })();
   </script>
 </body>
